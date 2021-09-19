@@ -1,7 +1,36 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
+<h1>Vegas Spreads</h1>
+<input type="file" @ref="_vegasSpreadsUpload" @onchange="@ImportSpreads" accept=".csv" />
+@if (VegasSpreads == null)
+{
+    <div>Import Spreads</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Team</th>
+                <th>Opponent</th>
+                <th>Line</th>
+                <th>Over/Under</th>
+                <th>Projected Points</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var spread in VegasSpreads)
+            {
+                <tr>
+                    <td>@spread.Time</td>
+                    <td>@spread.Team</td>
+                    <td>@spread.Opponent</td>
+                    <td>@spread.Line</td>
+                    <td>@spread.Over_Under</td>
+                    <td>@spread.ProjectedPoints</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
