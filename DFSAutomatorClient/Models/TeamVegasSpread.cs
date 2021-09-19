@@ -18,5 +18,13 @@ namespace DFSAutomatorClient.Models
         public decimal Over_Under { get; set; }
 
         public decimal ProjectedPoints { get; set; }
+
+        public decimal RankValue
+        {
+            get
+            {
+                return ProjectedPoints - Math.Abs(Line) / 2;
+            }
+        }
     }
 }

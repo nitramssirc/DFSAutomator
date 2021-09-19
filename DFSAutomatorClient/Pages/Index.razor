@@ -17,6 +17,8 @@ else
                 <th>Line</th>
                 <th>Over/Under</th>
                 <th>Projected Points</th>
+                <th>Rank Value</th>
+                <th>Team Max %</th>
             </tr>
         </thead>
         <tbody>
@@ -29,8 +31,49 @@ else
                     <td>@spread.Line</td>
                     <td>@spread.Over_Under</td>
                     <td>@spread.ProjectedPoints</td>
+                    <td>@spread.RankValue</td>
+                    <td>@TeamMaxPcts[spread.Team]%</td>
                 </tr>
             }
         </tbody>
     </table>
 }
+
+<h1>Players</h1>
+<input type="file" @ref="_playerUpload" @onchange="@ImportPlayers" accept=".csv" />
+@if (Players == null)
+{
+    <div>Import Players</div>
+}
+else
+{
+    <button class="btn btn-primary" @onclick="SavePlayers">Save</button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>Pos</th>
+                <th>Name</th>
+                <th>Salary</th>
+                <th>FPts</th>
+                <th>Ownership%</th>
+                <th>Max Exposure</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var player in Players)
+            {
+                <tr>
+                    <td>@player.team</td>
+                    <td>@player.pos</td>
+                    <td>@player.name</td>
+                    <td>$@player.salary</td>
+                    <td>@(player.fpts??0)</td>
+                    <td>@(player.proj_own??0)%</td>
+                    <td>@(player.max_exposure)%</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+

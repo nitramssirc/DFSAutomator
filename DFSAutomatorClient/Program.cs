@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Tewr.Blazor.FileReader;
+using BlazorDownloadFile;
 
 namespace DFSAutomatorClient
 {
@@ -26,6 +27,7 @@ namespace DFSAutomatorClient
             builder.Services.AddScoped(typeof(ICSVLoader), typeof(CSVLoader));
 
             builder.Services.AddFileReaderService(o => o.UseWasmSharedBuffer = true);
+            builder.Services.AddBlazorDownloadFile();
 
             await builder.Build().RunAsync();
         }
