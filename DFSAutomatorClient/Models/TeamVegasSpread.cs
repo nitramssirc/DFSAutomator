@@ -19,6 +19,7 @@ namespace DFSAutomatorClient.Models
 
         public decimal ProjectedPoints { get; set; }
 
+
         public decimal RankValue
         {
             get

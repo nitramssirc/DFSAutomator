@@ -56,6 +56,7 @@ else
                 <th>Name</th>
                 <th>Salary</th>
                 <th>FPts</th>
+                <th>Custom</th>
                 <th>Ownership%</th>
                 <th>Max Exposure</th>
             </tr>
@@ -69,6 +70,7 @@ else
                     <td>@player.name</td>
                     <td>$@player.salary</td>
                     <td>@(player.fpts??0)</td>
+                    <td>@(player.custom??0)</td>
                     <td>@(player.proj_own??0)%</td>
                     <td>@(player.max_exposure)%</td>
                 </tr>

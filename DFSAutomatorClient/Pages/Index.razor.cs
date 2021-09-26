@@ -29,12 +29,12 @@ namespace DFSAutomatorClient.Pages
         #region Client Events
 
         async void ImportSpreads()
-        { 
+        {
             var files = await FileReaderService.CreateReference(_vegasSpreadsUpload).EnumerateFilesAsync();
             await using var memoryStream = await files.First().CreateMemoryStreamAsync();
-            VegasSpreads = _csvLoader.Load<TeamVegasSpread>(memoryStream).OrderByDescending(s=>s.RankValue).ToArray();
+            VegasSpreads = _csvLoader.Load<TeamVegasSpread>(memoryStream).OrderByDescending(s => s.RankValue).ToArray();
             CalculateTeamMaxPcts();
-            
+
             StateHasChanged();
         }
 
@@ -65,13 +65,14 @@ namespace DFSAutomatorClient.Pages
         private void CalculateTeamMaxPcts()
         {
             var teamCount = VegasSpreads.Length;
-            var maxPct = 40;
+            var maxPct = 25;
+            var maxValue = VegasSpreads.Max(vs => vs.RankValue);
             TeamMaxPcts = new Dictionary<string, decimal>();
-            for (int rank = 0; rank < teamCount; rank++)
+            foreach (var spread in VegasSpreads)
             {
-                var spread = VegasSpreads[rank];
-                var rankPct = (decimal)rank / teamCount;
-                var teamMaxPct = Math.Round(maxPct - (maxPct * rankPct), 2);
+                spread.Team = MapSpreadTeamToPlayerTeam(spread.Team);
+                var rankPct = spread.RankValue / maxValue;
+                var teamMaxPct = Math.Round(maxPct * rankPct, 2);
                 TeamMaxPcts.Add(spread.Team, teamMaxPct);
             }
         }
@@ -83,7 +84,31 @@ namespace DFSAutomatorClient.Pages
                 var teamMaxPct = TeamMaxPcts[player.team];
                 var playerOwnership = player.proj_own;
                 player.fpts = playerOwnership >= 1 ? player.fpts : 0;
+                player.custom = CalculatePlayerWeightedFantasyPts(player);
                 player.max_exposure = playerOwnership >= 1 ? teamMaxPct : 0;
+            }
+        }
+
+        private decimal CalculatePlayerWeightedFantasyPts(Player player)
+        {
+            return (player.floor ?? 0) * .2M +
+                    (player.fpts ?? 0) * .5M +
+                    (player.ceil ?? 0) * .3M;
+        }
+
+        private string MapSpreadTeamToPlayerTeam(string spreadTeam)
+        {
+            switch (spreadTeam)
+            {
+                case "NOS": return "NO";
+                case "TBB": return "TB";
+                case "JAC": return "JAX";
+                case "SFO": return "SF";
+                case "LVR": return "LV";
+                case "KCC": return "KC";
+                case "GBP": return "GB";
+                case "NEP": return "NE";
+                default: return spreadTeam;
             }
         }
 

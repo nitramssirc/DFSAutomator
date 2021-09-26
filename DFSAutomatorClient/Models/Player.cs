@@ -22,5 +22,7 @@ namespace DFSAutomatorClient.Models
         public decimal? max_exposure { get; set; }
         public decimal? rg_value { get; set; }
         public int? salary { get; set; }
+
+        public decimal? custom { get; set; }
     }
 }
