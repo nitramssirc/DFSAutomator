@@ -24,5 +24,9 @@ namespace DFSAutomatorClient.Models
         public int? salary { get; set; }
 
         public decimal? custom { get; set; }
+
+        public string rg_id { get; set; }
+
+        public string partner_id { get; set; }
     }
 }
