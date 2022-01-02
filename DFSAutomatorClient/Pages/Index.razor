@@ -2,6 +2,7 @@
 
 <h1>Vegas Spreads</h1>
 <input type="file" @ref="_vegasSpreadsUpload" @onchange="@ImportSpreads" accept=".csv" />
+<input type="button" value="Clear" @onclick="ClearSpreads" />
 @if (VegasSpreads == null)
 {
     <div>Import Spreads</div>
@@ -39,8 +40,47 @@ else
     </table>
 }
 
+<h1>Salary Tiers</h1>
+<div>
+    Pos
+    <input @bind="salaryTierPos" />
+    Min
+    <input @bind="salaryTierMin" />
+    Max
+    <input @bind="salaryTierMax" />
+    Pct
+    <input @bind="salaryTierPct" />
+</div>
+<div>
+    <input type="button" value="Add" @onclick="AddSalaryTier" />
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Pos</th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Pct</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var salaryTier in SalaryTiers)
+        {
+            <tr>
+                <td>@salaryTier.Pos</td>
+                <td>$@salaryTier.Min</td>
+                <td>$@salaryTier.Max</td>
+                <td>@salaryTier.Pct%</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
 <h1>Players</h1>
 <input type="file" @ref="_playerUpload" @onchange="@ImportPlayers" accept=".csv" />
+<input type="button" value="Clear" @onclick="ClearPlayers" />
+
 @if (Players == null)
 {
     <div>Import Players</div>
@@ -55,9 +95,12 @@ else
                 <th>Pos</th>
                 <th>Name</th>
                 <th>Salary</th>
+                <th>Floor</th>
                 <th>FPts</th>
+                <th>Ceiling</th>
                 <th>Custom</th>
                 <th>Ownership%</th>
+                <th>Salary Tier %</th>
                 <th>Max Exposure</th>
             </tr>
         </thead>
@@ -69,9 +112,12 @@ else
                     <td>@player.pos</td>
                     <td>@player.name</td>
                     <td>$@player.salary</td>
+                    <td>@(player.floor??0)</td>
                     <td>@(player.fpts??0)</td>
+                    <td>@(player.ceil??0)</td>
                     <td>@(player.custom??0)</td>
                     <td>@(player.proj_own??0)%</td>
+                    <td>@(GetSalaryTierForPlayer(player)??0)%</td>
                     <td>@(player.max_exposure)%</td>
                 </tr>
             }

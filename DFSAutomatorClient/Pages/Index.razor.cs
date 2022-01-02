@@ -25,6 +25,12 @@ namespace DFSAutomatorClient.Pages
         public TeamVegasSpread[] VegasSpreads { get; private set; }
         public Player[] Players { get; private set; }
         public Dictionary<string, decimal> TeamMaxPcts = new Dictionary<string, decimal>();
+        public List<SalaryTier> SalaryTiers = new List<SalaryTier>();
+
+        private string salaryTierPos;
+        private int? salaryTierMin;
+        private int? salaryTierMax;
+        private decimal? salaryTierPct;
 
         #region Client Events
 
@@ -58,6 +64,29 @@ namespace DFSAutomatorClient.Pages
             }
         }
 
+        private void ClearSpreads()
+        {
+            VegasSpreads = new TeamVegasSpread[0];
+        }
+
+        private void ClearPlayers()
+        {
+            Players = new Player[0];
+        }
+
+        private void AddSalaryTier()
+        {
+            if (salaryTierPos == null || !salaryTierMin.HasValue || !salaryTierMax.HasValue || !salaryTierPct.HasValue) return;
+            
+            SalaryTiers.Add(new SalaryTier(salaryTierPos, salaryTierMin.Value, salaryTierMax.Value, salaryTierPct.Value));
+            salaryTierPos = null;
+            salaryTierMin = null;
+            salaryTierMax = null;
+            salaryTierPct = null;
+
+            CalculatePlayerMaxPct();
+        }
+
         #endregion
 
         #region Private Methods
@@ -83,10 +112,19 @@ namespace DFSAutomatorClient.Pages
             {
                 var teamMaxPct = TeamMaxPcts[player.team];
                 var playerOwnership = player.proj_own;
+                var playerSalaryTierPct = GetSalaryTierForPlayer(player);
+
                 player.fpts = playerOwnership >= 1 ? player.fpts : 0;
                 player.custom = CalculatePlayerWeightedFantasyPts(player);
-                player.max_exposure = playerOwnership >= 1 ? teamMaxPct : 0;
+                player.max_exposure = playerOwnership >= 1 ? CalculateWeightedMaxExposure(teamMaxPct, playerSalaryTierPct) : 0;
             }
+        }
+
+        private decimal CalculateWeightedMaxExposure(decimal teamMaxPct, decimal? playerSalaryTierPct)
+        {
+            if (!playerSalaryTierPct.HasValue) return teamMaxPct;
+            return teamMaxPct * 0.75M +
+                playerSalaryTierPct.Value * 0.25M;
         }
 
         private decimal CalculatePlayerWeightedFantasyPts(Player player)
@@ -110,6 +148,12 @@ namespace DFSAutomatorClient.Pages
                 case "NEP": return "NE";
                 default: return spreadTeam;
             }
+        }
+
+        private decimal? GetSalaryTierForPlayer(Player player)
+        {
+            var salaryTier = SalaryTiers.FirstOrDefault(st => st.Pos == player.pos && player.salary >= st.Min && player.salary <= st.Max);
+            return salaryTier?.Pct;
         }
 
         #endregion
